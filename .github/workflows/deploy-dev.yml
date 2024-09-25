@@ -1,0 +1,28 @@
+name: Deploy Dev
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Executing remote SSH commands using key
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          port: ${{ secrets.PORT }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            whoami &&
+            ssh-keyscan -H ${{ secrets.HOST }} >> ~/.ssh/known_hosts &&
+            cd app &&
+            cd lahelu &&
+            git checkout main &&
+            git pull &&
+            npm ci &&
+            pm2 start ecosystem.config.js &&
+            pm2 save -f
