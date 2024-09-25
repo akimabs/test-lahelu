@@ -1,14 +1,14 @@
 version: "3.9"
 
 services:
-  nextjs-app:
+  lahelu-web:
     build: .
     environment:
       - NODE_ENV=production
     ports:
       - "3000-3002:3000"
     networks:
-      - nextjs-network
+      - lahelu-network
     deploy:
       mode: replicated
       replicas: 3
@@ -19,5 +19,5 @@ services:
         window: 120s
 
 networks:
-  nextjs-network:
+  lahelu-network:
     driver: bridge
