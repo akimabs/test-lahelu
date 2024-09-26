@@ -6,6 +6,7 @@ import CardGreetings from "@/components/ui/card-greetings";
 import CardContent from "@/components/custom/card-content";
 import { ActivityIndicator, NativeScrollEvent, NativeSyntheticEvent, StyleSheet, Text } from "react-native";
 import { randomNumber } from "@/scripts/randomNumber";
+import debounce from "lodash.debounce";
 
 type Props = {
   onScroll: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
@@ -32,23 +33,26 @@ function ScrollContent({ onScroll, data, isFetching }: Props) {
     [index]
   );
 
-  const loadMoreData = useCallback(() => {
-    setLoading(true);
-    const nextIndex = (index + 1) % memeAssets.length;
-    const newData: { imgUrl: string; username: string; total_comment: number }[] | undefined = [
-      {
-        username: "udon_sedunia",
-        imgUrl: memeAssets[nextIndex],
-        total_comment: randomNumber(20),
-      },
-    ];
+  const loadMoreData = useCallback(
+    debounce(() => {
+      setLoading(true);
+      const nextIndex = (index + 1) % memeAssets.length;
+      const newData: { imgUrl: string; username: string; total_comment: number }[] | undefined = [
+        {
+          username: "udon_sedunia",
+          imgUrl: memeAssets[nextIndex],
+          total_comment: randomNumber(20),
+        },
+      ];
 
-    const dataUsage = isFetching ? newData : data?.data || [];
+      const dataUsage = isFetching ? newData : data?.data || [];
 
-    setData((prevData) => [...(prevData || []), ...dataUsage]);
-    setIndex(nextIndex);
-    setLoading(false);
-  }, [memeAssets, index]);
+      setData((prevData) => [...(prevData || []), ...dataUsage]);
+      setIndex(nextIndex);
+      setLoading(false);
+    }, 350),
+    [memeAssets, index]
+  );
 
   const headerComponent = useCallback(() => {
     return <CardGreetings emoji="🥰" title="Ingin download meme di Lahelu? Klik disini!" />;

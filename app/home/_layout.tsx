@@ -9,21 +9,17 @@ function Home() {
   const translateY = useRef(new Animated.Value(0)).current;
   const offset = useRef<number>(0);
   const [hasScrolled, setHasScrolled] = useState<boolean>(false);
-  const { dataPostHome, isError, isLoading, isFetching } = useHome();
+  const { dataPostHome, isFetching } = useHome();
 
-  const handleAnimationUp = useCallback(() => {
-    Animated.spring(translateY, {
-      toValue: 0,
-      useNativeDriver: true,
-    }).start();
-  }, [translateY]);
-
-  const handleAnimationDown = useCallback(() => {
-    Animated.spring(translateY, {
-      toValue: 1,
-      useNativeDriver: true,
-    }).start();
-  }, [translateY]);
+  const handleAnimationHeader = useCallback(
+    (value: number) => {
+      Animated.spring(translateY, {
+        toValue: value,
+        useNativeDriver: true,
+      }).start();
+    },
+    [translateY]
+  );
 
   const handleScroll = useCallback((event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const currentOffset = event.nativeEvent.contentOffset.y;
@@ -32,7 +28,7 @@ function Home() {
       setHasScrolled(true);
     }
     if (Math.abs(dif) >= 10) {
-      dif < 0 ? handleAnimationUp() : handleAnimationDown();
+      dif < 0 ? handleAnimationHeader(0) : handleAnimationHeader(1);
     }
     offset.current = currentOffset;
   }, []);
