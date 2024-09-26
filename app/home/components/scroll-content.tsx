@@ -15,7 +15,7 @@ type Props = {
 };
 
 function ScrollContent({ onScroll, data, isFetching }: Props) {
-  const dataHashtag = ["Sawer", "Lucu", "Meme", "Waduh", "Anjay", "Mabar", "Lol"];
+  const dataHashtag = useMemo(() => ["Sawer", "Lucu", "Meme", "Waduh", "Anjay", "Mabar", "Lol"], []);
 
   const [dataTemporary, setData] = useState<z.infer<typeof PostItemSchema>[] | undefined>(data?.data);
   const [index, setIndex] = useState<number>(0);

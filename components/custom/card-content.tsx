@@ -13,6 +13,7 @@ import IconShare from "@/components/icon/icon-share";
 import Modal from "react-native-modal";
 import { FlashList } from "@shopify/flash-list";
 import Badge from "../ui/badge";
+import { useCountRenders } from "@/hooks/useCountRender";
 
 type Props = {
   imgUrl: string;
@@ -24,6 +25,7 @@ type Props = {
 function CardContent({ imgUrl, dataHashtag, totalComment, username }: Props) {
   const [aspectRatio, setAspectRatio] = useState<number | null>(null);
   const [isModalVisible, setModalVisible] = useState<boolean>(false);
+  useCountRenders("Content");
 
   useEffect(() => {
     if (Platform.OS == "ios") setAspectRatio(2);
@@ -64,33 +66,34 @@ function CardContent({ imgUrl, dataHashtag, totalComment, username }: Props) {
       <View style={styles.containerCaption}>
         <Text style={styles.textCaption}>AWoakwoakwoakwo</Text>
       </View>
-      {aspectRatio && Platform.OS == "web" ? (
-        <img
-          style={{
-            width: "100%",
-            height: undefined,
-            aspectRatio,
-            backgroundColor: "gray",
-            marginBottom: 13,
-          }}
-          src={imgUrl}
-          alt={imgUrl}
-          loading="lazy"
-        />
-      ) : (
-        <Image
-          source={{
-            uri: imgUrl,
-          }}
-          style={{
-            width: "100%",
-            height: undefined,
-            aspectRatio: aspectRatio ?? 0,
-            backgroundColor: "gray",
-            marginBottom: 13,
-          }}
-        />
-      )}
+      <View
+        style={{ width: "100%", height: undefined, aspectRatio: aspectRatio ?? 0, backgroundColor: "gray", marginBottom: 13 }}
+      >
+        {Platform.OS === "web" ? (
+          <img
+            style={{
+              display: aspectRatio ? "block" : "none",
+              width: "100%",
+              height: "auto",
+              aspectRatio: aspectRatio ?? 0,
+            }}
+            src={imgUrl}
+            alt={imgUrl}
+            loading="lazy"
+          />
+        ) : (
+          <Image
+            source={{
+              uri: imgUrl,
+            }}
+            style={{
+              width: "100%",
+              height: "auto",
+              aspectRatio: aspectRatio ?? 0,
+            }}
+          />
+        )}
+      </View>
 
       {/* Hashtag */}
       <FlashList
