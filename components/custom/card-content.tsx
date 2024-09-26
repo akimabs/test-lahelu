@@ -26,10 +26,12 @@ function CardContent({ imgUrl, dataHashtag, totalComment, username }: Props) {
   const [isModalVisible, setModalVisible] = useState<boolean>(false);
 
   useEffect(() => {
+    if (Platform.OS == "ios") setAspectRatio(2);
+
     Image.getSize(
       imgUrl,
       (width, height) => {
-        setAspectRatio(width / height);
+        setAspectRatio(Number(width / height));
       },
       (error) => {
         console.log("Error loading image size: ", error);

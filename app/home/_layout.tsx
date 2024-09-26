@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useRef, useState } from "react";
-import { Animated, NativeScrollEvent, NativeSyntheticEvent, SafeAreaView, StyleSheet, View } from "react-native";
+import { Animated, NativeScrollEvent, NativeSyntheticEvent, Platform, SafeAreaView, StyleSheet, View } from "react-native";
 import Header from "@/components/custom/header";
 import TabNav from "@/components/custom/tab-nav";
 import ScrollContent from "./components/scroll-content";
@@ -42,7 +42,7 @@ function Home() {
       {
         translateY: translateY.interpolate({
           inputRange: [0, 1],
-          outputRange: [0, -130],
+          outputRange: [0, Platform.OS == "ios" ? -140 : -130],
         }),
       },
     ],
