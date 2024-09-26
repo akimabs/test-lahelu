@@ -2,7 +2,7 @@ name: Deploy Mobile Dev
 on:
   push:
     branches:
-      - "*-release"
+      - master
 
 jobs:
   path-filters:
