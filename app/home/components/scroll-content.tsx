@@ -1,20 +1,18 @@
-import { z } from "zod";
 import { FlashList } from "@shopify/flash-list";
-import { memo, useCallback, useMemo, useState } from "react";
-import PostAPISchema, { PostItemSchema } from "@/api/schema/post.schema";
+import { memo, useCallback, useMemo } from "react";
 import CardGreetings from "@/components/ui/card-greetings";
 import CardContent from "@/components/custom/card-content";
 import { ActivityIndicator, NativeScrollEvent, NativeSyntheticEvent, StyleSheet, Text } from "react-native";
-import { randomNumber } from "@/scripts/randomNumber";
 import debounce from "lodash.debounce";
-import { dummyData } from "@/constants/data";
+import { QueryObserverResult } from "@tanstack/react-query";
+import { PostAPIType } from "@/api/type/post.type";
 
 type TData = { imgUrl: string; username: string; total_comment: number };
 type Props = {
   onScroll: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
   data: TData[];
   isFetching: boolean;
-  refetch: any;
+  refetch: () => Promise<QueryObserverResult<PostAPIType.PostsHome.Response>>;
 };
 
 function ScrollContent({ onScroll, data, isFetching, refetch }: Props) {
