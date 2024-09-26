@@ -14,6 +14,7 @@ jobs:
       - name: 🏗 Setup paths filter
         id: filter
         uses: dorny/paths-filter@v3
+        continue-on-error: true
         with:
           filters: |
             native:
