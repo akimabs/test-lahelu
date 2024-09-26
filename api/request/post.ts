@@ -6,8 +6,8 @@ import { PostAPIType } from "../type/post.type";
 const BASE_URL = "https://dummyjson.com/c";
 
 export const getPostsHome = withQuery(
-  "/5730-64d1-4da5-a695",
+  "/e303-d50e-4f32-b2be",
   (params: PostAPIType.PostsHome.Request) =>
-    get<PostAPIType.PostsHome.Response>("/5730-64d1-4da5-a695", { baseURL: BASE_URL, params }),
+    get<PostAPIType.PostsHome.Response>("/e303-d50e-4f32-b2be", { baseURL: BASE_URL, params }),
   PostAPISchema.PostsHome.Response
 );

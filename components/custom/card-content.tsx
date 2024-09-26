@@ -14,6 +14,7 @@ import Modal from "react-native-modal";
 import { FlashList } from "@shopify/flash-list";
 import Badge from "../ui/badge";
 import { useCountRenders } from "@/hooks/useCountRender";
+import ImageCustom from "./image-custom";
 
 type Props = {
   imgUrl: string;
@@ -23,31 +24,17 @@ type Props = {
 };
 
 function CardContent({ imgUrl, dataHashtag, totalComment, username }: Props) {
-  const [aspectRatio, setAspectRatio] = useState<number | null>(null);
   const [isModalVisible, setModalVisible] = useState<boolean>(false);
-  useCountRenders("Content");
-
-  useEffect(() => {
-    if (Platform.OS == "ios") setAspectRatio(2);
-
-    Image.getSize(
-      imgUrl,
-      (width, height) => {
-        setAspectRatio(Number(width / height));
-      },
-      (error) => {
-        console.log("Error loading image size: ", error);
-      }
-    );
-  }, [imgUrl]);
 
   const dismissModal = useCallback(() => {
     setModalVisible(false);
   }, [isModalVisible]);
 
   const toggleModal = useCallback(() => {
-    setModalVisible(!isModalVisible);
+    setModalVisible((prev) => !prev);
   }, [isModalVisible]);
+
+  const renderItem = useCallback(({ item, index }: { item: string; index: number }) => <Badge title={item} index={index} />, []);
 
   return (
     <View style={styles.container}>
@@ -59,46 +46,20 @@ function CardContent({ imgUrl, dataHashtag, totalComment, username }: Props) {
           <Text style={styles.textDateSeparator}>·</Text>
           <Text style={styles.textDate}>2 Hari</Text>
         </View>
-        <TouchableOpacity style={{ height: 24, width: 24 }} onPress={toggleModal}>
+        <TouchableOpacity style={styles.actionMore} onPress={toggleModal}>
           <IconMore />
         </TouchableOpacity>
       </View>
       <View style={styles.containerCaption}>
         <Text style={styles.textCaption}>AWoakwoakwoakwo</Text>
       </View>
-      <View
-        style={{ width: "100%", height: undefined, aspectRatio: aspectRatio ?? 0, backgroundColor: "gray", marginBottom: 13 }}
-      >
-        {Platform.OS === "web" ? (
-          <img
-            style={{
-              display: aspectRatio ? "block" : "none",
-              width: "100%",
-              height: "auto",
-              aspectRatio: aspectRatio ?? 0,
-            }}
-            src={imgUrl}
-            alt={imgUrl}
-            loading="lazy"
-          />
-        ) : (
-          <Image
-            source={{
-              uri: imgUrl,
-            }}
-            style={{
-              width: "100%",
-              height: "auto",
-              aspectRatio: aspectRatio ?? 0,
-            }}
-          />
-        )}
-      </View>
+
+      <ImageCustom url={imgUrl} />
 
       {/* Hashtag */}
       <FlashList
         data={dataHashtag}
-        renderItem={({ item, index }) => <Badge title={item} index={index} />}
+        renderItem={renderItem}
         keyExtractor={(item) => item}
         horizontal={true}
         estimatedItemSize={10}
@@ -267,6 +228,7 @@ const styles = StyleSheet.create({
     paddingTop: 20,
     paddingHorizontal: 20,
   },
+  actionMore: { height: 24, width: 24 },
   actionReaction: {
     display: "flex",
     flexDirection: "row",

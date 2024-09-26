@@ -7,63 +7,41 @@ import CardContent from "@/components/custom/card-content";
 import { ActivityIndicator, NativeScrollEvent, NativeSyntheticEvent, StyleSheet, Text } from "react-native";
 import { randomNumber } from "@/scripts/randomNumber";
 import debounce from "lodash.debounce";
+import { dummyData } from "@/constants/data";
 
+type TData = { imgUrl: string; username: string; total_comment: number };
 type Props = {
   onScroll: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
-  data: z.infer<typeof PostAPISchema.PostsHome.Response> | undefined;
+  data: TData[];
   isFetching: boolean;
+  refetch: any;
 };
 
-function ScrollContent({ onScroll, data, isFetching }: Props) {
+function ScrollContent({ onScroll, data, isFetching, refetch }: Props) {
   const dataHashtag = useMemo(() => ["Sawer", "Lucu", "Meme", "Waduh", "Anjay", "Mabar", "Lol"], []);
-
-  const [dataTemporary, setData] = useState<z.infer<typeof PostItemSchema>[] | undefined>(data?.data);
-  const [index, setIndex] = useState<number>(0);
-  const [loading, setLoading] = useState<boolean>(false);
-
-  const memeAssets = useMemo(
-    () => [
-      "https://cdn.jsdelivr.net/gh/akimabs/asset_test_rn_platform/meme1.jpg",
-      "https://cdn.jsdelivr.net/gh/akimabs/asset_test_rn_platform/meme2.jpg",
-      "https://cdn.jsdelivr.net/gh/akimabs/asset_test_rn_platform/meme4.jpg",
-      "https://cdn.jsdelivr.net/gh/akimabs/asset_test_rn_platform/meme5.jpg",
-      "https://cdn.jsdelivr.net/gh/akimabs/asset_test_rn_platform/meme6.jpg",
-      "https://cdn.jsdelivr.net/gh/akimabs/asset_test_rn_platform/meme7.jpg",
-    ],
-    [index]
-  );
-
-  const loadMoreData = useCallback(
-    debounce(() => {
-      setLoading(true);
-      const nextIndex = (index + 1) % memeAssets.length;
-      const newData: { imgUrl: string; username: string; total_comment: number }[] | undefined = [
-        {
-          username: "udon_sedunia",
-          imgUrl: memeAssets[nextIndex],
-          total_comment: randomNumber(20),
-        },
-      ];
-
-      const dataUsage = isFetching ? newData : data?.data || [];
-
-      setData((prevData) => [...(prevData || []), ...dataUsage]);
-      setIndex(nextIndex);
-      setLoading(false);
-    }, 350),
-    [memeAssets, index]
-  );
 
   const headerComponent = useCallback(() => {
     return <CardGreetings emoji="🥰" title="Ingin download meme di Lahelu? Klik disini!" />;
   }, []);
 
+  const renderItem = useCallback(
+    ({ item }: { item: TData }) => (
+      <CardContent dataHashtag={dataHashtag} imgUrl={item.imgUrl} totalComment={item.total_comment} username={item.username} />
+    ),
+    [data]
+  );
+
+  const loadMoreData = useCallback(
+    debounce(() => {
+      refetch();
+    }, 1000),
+    []
+  );
+
   return (
     <FlashList
-      data={dataTemporary}
-      renderItem={({ item }) => (
-        <CardContent dataHashtag={dataHashtag} imgUrl={item.imgUrl} totalComment={item.total_comment} username={item.username} />
-      )}
+      data={data}
+      renderItem={renderItem}
       keyExtractor={(_, index) => index.toString()}
       estimatedItemSize={100}
       onScroll={onScroll}
@@ -71,9 +49,9 @@ function ScrollContent({ onScroll, data, isFetching }: Props) {
       ListHeaderComponent={headerComponent}
       onEndReached={loadMoreData}
       onEndReachedThreshold={0.5}
-      ListEmptyComponent={() => {
-        if (loading || isFetching) {
-          return <ActivityIndicator animating size="large" color="#65a4ec" />;
+      ListFooterComponent={() => {
+        if (isFetching) {
+          return <ActivityIndicator style={styles.paddingLoading} animating size="large" color="#65a4ec" />;
         }
         return <Text>data is empty</Text>;
       }}
@@ -85,4 +63,5 @@ export default memo(ScrollContent);
 
 const styles = StyleSheet.create({
   list: { paddingTop: 90 },
+  paddingLoading: { padding: 20 },
 });
