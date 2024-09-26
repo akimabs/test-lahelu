@@ -1,5 +1,5 @@
 import { memo, useCallback, useEffect, useState } from "react";
-import { Image, StyleSheet, Text, TouchableHighlight, TouchableOpacity, View } from "react-native";
+import { Image, Platform, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import IconMore from "@/components/icon/icon-more";
 import IconGalery from "@/components/icon/icon-galery";
 import IconDownload from "@/components/icon/icon-download";
@@ -16,12 +16,14 @@ import Badge from "../ui/badge";
 
 type Props = {
   imgUrl: string;
+  username: string;
+  totalComment: number;
   dataHashtag: string[];
 };
 
-function CardContent({ imgUrl, dataHashtag }: Props) {
+function CardContent({ imgUrl, dataHashtag, totalComment, username }: Props) {
   const [aspectRatio, setAspectRatio] = useState<number | null>(null);
-  const [isModalVisible, setModalVisible] = useState(false);
+  const [isModalVisible, setModalVisible] = useState<boolean>(false);
 
   useEffect(() => {
     Image.getSize(
@@ -49,7 +51,7 @@ function CardContent({ imgUrl, dataHashtag }: Props) {
       <View style={styles.containerHeader}>
         <View style={styles.containerTitle}>
           <View style={styles.profilePicture} />
-          <Text style={styles.textUsername}>udin_sedunia</Text>
+          <Text style={styles.textUsername}>{username}</Text>
           <Text style={styles.textDateSeparator}>·</Text>
           <Text style={styles.textDate}>2 Hari</Text>
         </View>
@@ -60,7 +62,20 @@ function CardContent({ imgUrl, dataHashtag }: Props) {
       <View style={styles.containerCaption}>
         <Text style={styles.textCaption}>AWoakwoakwoakwo</Text>
       </View>
-      {aspectRatio && (
+      {aspectRatio && Platform.OS == "web" ? (
+        <img
+          style={{
+            width: "100%",
+            height: undefined,
+            aspectRatio,
+            backgroundColor: "gray",
+            marginBottom: 13,
+          }}
+          src={imgUrl}
+          alt={imgUrl}
+          loading="lazy"
+        />
+      ) : (
         <Image
           source={{
             uri: imgUrl,
@@ -68,9 +83,9 @@ function CardContent({ imgUrl, dataHashtag }: Props) {
           style={{
             width: "100%",
             height: undefined,
-            aspectRatio,
+            aspectRatio: aspectRatio ?? 0,
             backgroundColor: "gray",
-            marginBottom: 10,
+            marginBottom: 13,
           }}
         />
       )}
@@ -98,7 +113,7 @@ function CardContent({ imgUrl, dataHashtag }: Props) {
           </TouchableOpacity>
           <TouchableOpacity activeOpacity={0.5} style={styles.actionComment}>
             <IconComment />
-            <Text style={styles.textAction}>5</Text>
+            <Text style={styles.textAction}>{totalComment}</Text>
           </TouchableOpacity>
         </View>
         <TouchableOpacity activeOpacity={0.5} style={styles.actionComment}>
@@ -240,7 +255,7 @@ const styles = StyleSheet.create({
   },
   line: {
     width: "100%",
-    backgroundColor: "gray",
+    backgroundColor: "#414141",
     height: 1,
   },
   containerSection: {
@@ -261,7 +276,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     paddingHorizontal: 15,
-    paddingTop: 10,
+    paddingTop: 13,
     paddingBottom: 15,
   },
   actionLike: {
@@ -269,7 +284,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 8,
     borderBottomLeftRadius: 8,
     borderWidth: 1,
-    borderColor: "gray",
+    borderColor: "#414141",
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
@@ -280,7 +295,7 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 8,
     borderBottomRightRadius: 8,
     borderWidth: 1,
-    borderColor: "gray",
+    borderColor: "#414141",
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
@@ -291,7 +306,7 @@ const styles = StyleSheet.create({
     padding: 8,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: "gray",
+    borderColor: "#414141",
     display: "flex",
     flexDirection: "row",
     alignItems: "center",

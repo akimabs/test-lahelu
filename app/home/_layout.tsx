@@ -3,11 +3,13 @@ import { Animated, NativeScrollEvent, NativeSyntheticEvent, SafeAreaView, StyleS
 import Header from "@/components/custom/header";
 import TabNav from "@/components/custom/tab-nav";
 import ScrollContent from "./components/scroll-content";
+import { useHome } from "./logic/useHome";
 
 function Home() {
   const translateY = useRef(new Animated.Value(0)).current;
   const offset = useRef<number>(0);
   const [hasScrolled, setHasScrolled] = useState<boolean>(false);
+  const { dataPostHome, isError, isLoading, isFetching } = useHome();
 
   const handleAnimationUp = useCallback(() => {
     Animated.spring(translateY, {
@@ -65,7 +67,7 @@ function Home() {
           <TabNav />
         </View>
       </Animated.View>
-      <ScrollContent onScroll={handleScroll} />
+      <ScrollContent onScroll={handleScroll} data={dataPostHome} isFetching={isFetching} />
     </SafeAreaView>
   );
 }
