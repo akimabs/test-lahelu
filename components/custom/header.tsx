@@ -12,8 +12,8 @@ function Header() {
         </TouchableOpacity>
         <View style={styles.textWrapper}>
           <View>
-            <Text style={styles.shadowTitleHeader}>LAHELU</Text>
-            <Text style={styles.titleHeader}>LAHELU</Text>
+            <Text style={styles.shadowTitleHeader}>TEST ACTIONS</Text>
+            <Text style={styles.titleHeader}>TEST ACTIONS</Text>
           </View>
         </View>
       </View>
