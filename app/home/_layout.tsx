@@ -8,41 +8,54 @@ import { useHome } from "./logic/useHome";
 function Home() {
   const translateY = useRef(new Animated.Value(0)).current;
   const offset = useRef<number>(0);
-  const [hasScrolled, setHasScrolled] = useState<boolean>(false);
+  const [animationRunning, setAnimationRunning] = useState<boolean>(false);
   const { mergedData, isFetching, refetch } = useHome();
 
   const handleAnimationHeader = useCallback(
     (value: number) => {
+      if (animationRunning) return;
+
+      setAnimationRunning(true);
       Animated.spring(translateY, {
         toValue: value,
         useNativeDriver: true,
-      }).start();
+      }).start(() => {
+        setAnimationRunning(false);
+      });
     },
-    [translateY]
+    [translateY, animationRunning]
   );
 
-  const handleScroll = useCallback((event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const currentOffset = event.nativeEvent.contentOffset.y;
-    const dif = currentOffset - offset.current;
-    if (!hasScrolled) {
-      setHasScrolled(true);
-    }
-    if (Math.abs(dif) >= 10) {
-      dif < 0 ? handleAnimationHeader(0) : handleAnimationHeader(1);
-    }
-    offset.current = currentOffset;
-  }, []);
+  const handleScroll = useCallback(
+    (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+      const currentOffset = event.nativeEvent.contentOffset.y;
+      const dif = currentOffset - offset.current;
+
+      if (Math.abs(dif) >= 10) {
+        if (dif < 0) {
+          // Scrolling up
+          handleAnimationHeader(0); // Show header
+        } else {
+          // Scrolling down
+          handleAnimationHeader(1); // Hide header
+        }
+      }
+
+      offset.current = currentOffset;
+    },
+    [handleAnimationHeader]
+  );
 
   const styledMemo = useMemo(
     () => [
       {
         translateY: translateY.interpolate({
           inputRange: [0, 1],
-          outputRange: [0, Platform.OS == "ios" ? -140 : -130],
+          outputRange: [0, Platform.OS === "ios" ? -140 : -130],
         }),
       },
     ],
-    []
+    [translateY]
   );
 
   const styles = StyleSheet.create({

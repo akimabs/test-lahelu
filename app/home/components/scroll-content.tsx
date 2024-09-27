@@ -32,7 +32,7 @@ function ScrollContent({ onScroll, data, isFetching, refetch }: Props) {
   const loadMoreData = useCallback(
     debounce(() => {
       refetch();
-    }, 1000),
+    }, 350),
     []
   );
 
